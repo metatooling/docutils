@@ -3,19 +3,21 @@ on:
   schedule:
     - cron:  '0 5 * * *'
 
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Install hub
+      uses: geertvdc/setup-hub@master
     - name: Mirror
       run: |
-        git clone --origin upstream https://repo.or.cz/docutils.git
+        git clone --origin=github "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
         cd docutils
         git config --global user.name "$GITHUB_ACTOR"
         git config --global user.email "$GITHUB_ACTOR"
-        git remote add origin "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
-        git fetch origin
-        git checkout --track origin/github
+        git remote add upstream https://repo.or.cz/docutils.git
+        hub sync
         git rebase upstream/master
         git push --mirror origin
       env:
