@@ -19,6 +19,6 @@ jobs:
         git remote add upstream https://repo.or.cz/docutils.git
         hub sync
         git rebase upstream/master
-        git push --mirror origin
+        git push --mirror github
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
