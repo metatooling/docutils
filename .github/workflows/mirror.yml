@@ -12,13 +12,22 @@ jobs:
       uses: geertvdc/setup-hub@master
     - name: Mirror
       run: |
-        git clone --origin=github "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+
+        track_all_upstream_branches() {
+            for b in $(git branch -a | grep remote | grep -v HEAD | grep -v master)
+            do
+                git branch --force --track ${b#remotes/upstream/} $i
+            done
+        }
+
+        git clone "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
         cd docutils
         git config --global user.name "$GITHUB_ACTOR"
         git config --global user.email "$GITHUB_ACTOR"
         git remote add upstream https://repo.or.cz/docutils.git
         hub sync
+        track_all_upstream_branches
         git rebase upstream/master
-        git push --mirror github
+        git push --mirror origin
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
